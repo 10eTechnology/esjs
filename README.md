@@ -19,50 +19,60 @@ import ESjs from 'esjs';
 const fields = {
   name:        { boost: 2 },
   description: { boost: 1 },
-  age:         null,
   job:         null,
 };
 
 const idx = new ESjs({ fields });
 
-const doc = {
-  name: 'Larry',
-  description: 'A nice guy',
-};
-
 idx.addDoc({
   id: 1,
   name: 'Larry Jones',
   description: 'A nice guy',
-  age: 42,
   job: 'plumber',
 });
 
 idx.addDoc({
   id: 2,
-  name: 'Frank Jones',
+  name: 'Moe Jones',
   description: "Larry's brother, a decent guy",
-  age: 38,
   job: 'architect',
 });
 
+idx.addDoc({
+  id: 2,
+  name: 'Curly Jones',
+  description: "Moe's brother, a funny guy",
+  job: 'mathematician',
+});
+
 idx.search('Larry');
-idx.search({ _any: 'Larry' }); // equivalent
-// [{ id: 1, score: 0.1 }, { id: 2, score: 0.05 }]
-idx.search({ name: 'Larry' });
+idx.search({ must: { match: { _all: 'Larry' } } }); // equivalent
+// [{ id: 1, score: 0.1 }, { id: 2, score: 0.05 }] (scores are not real)
+idx.search({ must: { match: { name: 'Larry' } } });
 // [{ id: 1, score: 0.9 }]
 idx.search({
-  name: { query: 'Larry', boost: 5 },
-  description: { query: 'guy', boost: 1 },
+  must: {
+    match: {
+      name:        { query: 'Larry', boost: 5 },
+      description: { query: 'guy', boost: 1 },
+    },
+  },
 });
-// [{ id: 1, score: 0.1 }, { id: 2, score: 0.05 }]
+// [{ id: 1, score: 0.1 }, { id: 2, score: 0.05 }, { id: 3, score: 0.05 }]
 idx.search({
-  must: [{
+  must: {
+    match: { description: 'brother' },
+    term:  { job: 'plumber' },
+  },
+});
+// [{ id: 1, score: 0.1 }, { id: 2, score: 0.01 }, { id: 3, score: 0.01 }]
+idx.search({
+  must: {
     match: {
       name: 'Jones',
       description: 'brother',
     },
-  }],
+  },
   filter: [{
     term: { job: 'plumber' }
   }],

@@ -22,8 +22,6 @@ const idx = new ESjs({ fields });
 suite
   .add('indexing data', () => {
     idx.addDocs(docs);
-
-    console.log('document count', Object.keys(idx.docs).length);
   })
   .add('search on simple string', () => {
     idx.search('tribute');
