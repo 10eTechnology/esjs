@@ -1,0 +1,63 @@
+{
+  "version": "1.0",
+  "fields": {
+    "field1": {
+      "boost": 1
+    },
+    "field2": {
+      "boost": 2
+    }
+  },
+  "docs": {
+    "1": {
+      "field1": "a",
+      "field2": "b"
+    }
+  },
+  "index": {
+    "tokenized": {
+      "field1": {
+        "a": {
+          "df": 1,
+          "docs": {
+            "1": {
+              "tf": 1
+            }
+          }
+        }
+      },
+      "field2": {
+        "b": {
+          "df": 1,
+          "docs": {
+            "1": {
+              "tf": 1
+            }
+          }
+        }
+      }
+    },
+    "raw": {
+      "field1": {
+        "a": {
+          "df": 1,
+          "docs": {
+            "1": {
+              "tf": 1
+            }
+          }
+        }
+      },
+      "field2": {
+        "b": {
+          "df": 1,
+          "docs": {
+            "1": {
+              "tf": 1
+            }
+          }
+        }
+      }
+    }
+  }
+}
