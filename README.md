@@ -7,7 +7,7 @@ Elasticsearch-ish inverse indexed search engine for Node.
 Install
 
 ```
-yarn add esjs
+yarn add https://github.com/10eTechnology/esjs
 ```
 
 Use
