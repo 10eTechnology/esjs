@@ -153,6 +153,10 @@ export default class ESjs {
     let i = 0;
     let idx = this.index[type][field];
 
+    if (!idx) {
+      return null;
+    }
+
     while (i < token.length) {
       const c = token[i];
 

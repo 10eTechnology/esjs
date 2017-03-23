@@ -161,6 +161,7 @@ describe('.search()', () => {
     title:    { boost: 3 },
     body:     { boost: 2 },
     category: null,
+    unused:   null,
   };
 
   const searchDocs = [{
