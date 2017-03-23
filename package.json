@@ -37,11 +37,9 @@
     "mocha": "^3.2.0"
   },
   "dependencies": {
-    "node-snowball": "^0.2.0",
     "porter-stemmer": "^0.9.1"
   },
   "peerDependencies": {
-    "node-snowball": "^0.2.0",
     "porter-stemmer": "^0.9.1"
   }
 }
