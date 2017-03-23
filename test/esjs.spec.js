@@ -64,17 +64,11 @@ describe('.new()', () => {
 
   context('given a serialized index with the wrong version', () => {
     it('throws an error', () => {
-      let idx = null;
-
-      try {
-        idx = new ESjs(null, JSON.stringify({ version: '0.0' }));
-      } catch (e) {
-        expect(e.toString())
-          .to
-          .equal("Error: Can't deserialize from version 0.0");
-      }
-
-      expect(idx).to.be(null);
+      expect(() => {
+        /* eslint-disable no-new */
+        new ESjs(null, JSON.stringify({ version: '0.0' }));
+        /* eslint-enable no-new */
+      }).to.throwError("Error: Can't deserialize from version 0.0");
     });
   });
 });
@@ -138,6 +132,26 @@ describe('.addDoc()', () => {
 
     it('stores the docs', () => {
       expect(json.docs).to.eql(storedDocs);
+    });
+  });
+
+  context('given a null field value', () => {
+    const idx = new ESjs({ fields });
+
+    it('does not throw an error', () => {
+      expect(() => {
+        idx.addDoc({ id: 1, title: 'title', body: null });
+      }).not.to.throwError();
+    });
+  });
+
+  context('given an integer field value', () => {
+    const idx = new ESjs({ fields: { age: null } });
+
+    it('does not throw an error', () => {
+      expect(() => {
+        idx.addDoc({ id: 1, age: 42 });
+      }).not.to.throwError();
     });
   });
 });

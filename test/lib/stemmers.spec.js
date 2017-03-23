@@ -30,31 +30,3 @@ describe('PorterStemmer', () => {
     ]);
   });
 });
-
-describe('SnowballStemmer', () => {
-  const input = [
-    'running',
-    'created',
-    'leaving',
-    'cats',
-    'attainable',
-    'archeology',
-    'archeological',
-    'possibly',
-    'possible',
-  ];
-
-  it('produces the expected output', () => {
-    expect(SnowballStemmer.run(input)).to.eql([
-      'run',
-      'creat',
-      'leav',
-      'cat',
-      'attain',
-      'archeolog',
-      'archeolog',
-      'possibl',
-      'possibl',
-    ]);
-  });
-});
