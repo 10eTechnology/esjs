@@ -2,20 +2,22 @@
   "name": "esjs",
   "version": "1.0.0",
   "description": "Elasticsearch-ish inverse indexed search engine for Node.",
-  "main": "index.js",
+  "main": "lib/index.js",
   "repository": "git@github.com:10eTechnology/esjs.git",
   "author": "Aaron Craig <aaron@10etechnology.com>",
   "license": "MIT",
   "scripts": {
     "test": "mocha --require babel-register ./test/esjs.spec.js ./test/**/*.spec.js",
     "performance": "node ./performance/index.js",
-    "packp": "webpack --config ./performance.webpack.js"
+    "build": "rm -rf ./lib && yarn build:umd",
+    "build:umd": "webpack --config webpack.config.js --sort-assets-by --progress"
   },
   "devDependencies": {
     "babel-cli": "^6.14.0",
     "babel-core": "^6.14.0",
     "babel-env": "^1.3.1",
     "babel-eslint": "^6.1.2",
+    "babel-loader": "^6.4.1",
     "babel-plugin-syntax-trailing-function-commas": "^6.22.0",
     "babel-plugin-transform-class-constructor-call": "^6.22.0",
     "babel-plugin-transform-decorators-legacy": "^1.3.4",
@@ -24,7 +26,7 @@
     "babel-plugin-transform-export-extensions": "^6.22.0",
     "babel-plugin-transform-function-bind": "^6.22.0",
     "babel-polyfill": "^6.20.0",
-    "babel-preset-latest": "^6.24.0",
+    "babel-preset-env": "^1.2.2",
     "babel-register": "^6.24.0",
     "benchmark": "^2.1.3",
     "eslint": ">= 3.13.0",
@@ -34,7 +36,8 @@
     "eslint-plugin-react": "^6.10.3",
     "expect.js": "^0.3.1",
     "lodash": "^4.17.4",
-    "mocha": "^3.2.0"
+    "mocha": "^3.2.0",
+    "webpack": "^2.3.2"
   },
   "dependencies": {
     "porter-stemmer": "^0.9.1"

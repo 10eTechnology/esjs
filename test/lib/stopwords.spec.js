@@ -1,7 +1,7 @@
 /* eslint-disable import/no-extraneous-dependencies */
 import expect from 'expect.js';
 /* eslint-enable import/no-extraneous-dependencies */
-import { Stopwords } from '../../lib/stopwords';
+import { Stopwords } from '../../src/stopwords';
 
 describe('Stopwords', () => {
   const input = [

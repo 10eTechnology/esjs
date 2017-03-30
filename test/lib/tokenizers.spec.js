@@ -1,7 +1,7 @@
 /* eslint-disable import/no-extraneous-dependencies */
 import expect from 'expect.js';
 /* eslint-enable import/no-extraneous-dependencies */
-import { StandardTokenizer, tokenCount } from '../../lib/tokenizers';
+import { StandardTokenizer, tokenCount } from '../../src/tokenizers';
 
 describe('StandardTokenizer', () => {
   const input = 'This.String. has#much punctions! They \'should\' be "removed"';

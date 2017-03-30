@@ -1,7 +1,7 @@
 /* eslint-disable import/no-extraneous-dependencies */
 import expect from 'expect.js';
 /* eslint-enable import/no-extraneous-dependencies */
-import Pipeline from '../../lib/pipeline';
+import Pipeline from '../../src/pipeline';
 
 describe('Pipeline', () => {
   const input = 'The greatest show on Earth running!';

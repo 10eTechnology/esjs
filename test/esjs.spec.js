@@ -1,7 +1,7 @@
 /* eslint-disable import/no-extraneous-dependencies */
 import expect from 'expect.js';
 /* eslint-enable import/no-extraneous-dependencies */
-import ESjs from '../';
+import ESjs from '../src';
 import serializedIndex from './fixtures/serialized-index.json';
 import indexedDocs from './fixtures/indexed-docs.json';
 
