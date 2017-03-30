@@ -1,6 +1,6 @@
 {
   "name": "esjs",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Elasticsearch-ish inverse indexed search engine for Node.",
   "main": "lib/index.js",
   "repository": "git@github.com:10eTechnology/esjs.git",
