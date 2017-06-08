@@ -88,10 +88,13 @@ export default class Search {
   }
 
   filterResults(results) {
+    console.log('filteresults', results);
     if (!this.query.filter) {
       return results;
     }
     const docIds = Object.keys(this.searchFields(this.query.filter));
+
+    console.lod('docids', docIds);
     const filtered = {};
 
     Object.keys(results).forEach((id) => {
