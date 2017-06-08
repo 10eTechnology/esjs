@@ -74,6 +74,7 @@ export default class Search {
     console.log('74:', queries);
 
     Object.keys(queries).forEach((type) => {
+      console.log('77:', type);
       const results = this[type](queries[type]);
 
       console.log('79:', results);
