@@ -94,7 +94,7 @@ export default class Search {
     }
     const docIds = Object.keys(this.searchFields(this.query.filter));
 
-    console.lod('docids', docIds);
+    console.log('docids', docIds);
     const filtered = {};
 
     Object.keys(results).forEach((id) => {
