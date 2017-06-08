@@ -55,7 +55,7 @@ export default class Search {
       this.searchFields(this.query.must),
     );
 
-    console.log(matches)
+    console.log('58:', matches);
 
     const results = [];
 
@@ -71,11 +71,12 @@ export default class Search {
   searchFields(queries) {
     let docs = {};
 
-    console.log(queries)
+    console.log('74:', queries);
 
     Object.keys(queries).forEach((type) => {
       const results = this[type](queries[type]);
-      console.log(results)
+
+      console.log('79:', results);
 
       docs = Search.mergeMatches(docs, results);
     });
@@ -84,10 +85,11 @@ export default class Search {
   }
 
   filterResults(results) {
+    console.log('88:', this);
     if (!this.query.filter) {
       return results;
     }
-    console.log(this.query.filter)
+    console.log('92:', this.query.filter);
     const docIds = Object.keys(this.searchFields(this.query.filter));
     const filtered = {};
 
