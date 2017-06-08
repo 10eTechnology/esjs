@@ -100,7 +100,8 @@ export default class Search {
     const filtered = {};
 
     Object.keys(results).forEach((id) => {
-      if (docIds.indexOf(id) === -1) {
+      console.log('103 id', id);
+      if (docIds.indexOf(id) !== -1) {
         filtered[id] = results[id];
       }
     });
