@@ -55,6 +55,8 @@ export default class Search {
       this.searchFields(this.query.must),
     );
 
+    console.log('matches', matches);
+
     const results = [];
 
     Object
@@ -102,6 +104,8 @@ export default class Search {
         filtered[id] = results[id];
       }
     });
+
+    console.log(filtered);
 
     return filtered;
   }
