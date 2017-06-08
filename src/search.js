@@ -75,9 +75,14 @@ export default class Search {
       Object.keys(q).forEach((type) => {
         const results = this[type](q[type]);
 
+        console.log('q', q, 'type', type);
+        console.log('results', results);
+
         docs = Search.mergeMatches(docs, results);
       });
     });
+
+    console.log('docs', docs);
 
     return docs;
   }
