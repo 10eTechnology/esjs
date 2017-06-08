@@ -54,9 +54,6 @@ export default class Search {
     const matches = this.filterResults(
       this.searchFields(this.query.must),
     );
-
-    console.log('matches', matches);
-
     const results = [];
 
     Object
@@ -77,36 +74,28 @@ export default class Search {
       Object.keys(q).forEach((type) => {
         const results = this[type](q[type]);
 
-        console.log('q', q, 'type', type);
-        console.log('results', results);
-
         docs = Search.mergeMatches(docs, results);
       });
     });
-
-    console.log('docs', docs);
 
     return docs;
   }
 
   filterResults(results) {
-    console.log('filteresults', results);
     if (!this.query.filter) {
       return results;
     }
+    if (Array.isArray(this.query.filter) && this.query.filter.length === 0) {
+      return results;
+    }
     const docIds = Object.keys(this.searchFields(this.query.filter));
-
-    console.log('docids', docIds);
     const filtered = {};
 
     Object.keys(results).forEach((id) => {
-      console.log('103 id', id);
       if (docIds.indexOf(id) !== -1) {
         filtered[id] = results[id];
       }
     });
-
-    console.log(filtered);
 
     return filtered;
   }
