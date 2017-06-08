@@ -51,9 +51,12 @@ export default class Search {
   }
 
   search() {
-    const matches = this.filterResults(
-      this.searchFields(this.query.must),
-    );
+    // return all docs if the must obj is empty
+    const matches = this.filterResults(() => (
+      Object.keys(this.query.must).length === 0 ?
+        this.docs
+      : this.searchFields(this.query.must)
+    ));
 
     console.log('matches', matches);
 
