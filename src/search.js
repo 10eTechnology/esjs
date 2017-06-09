@@ -122,6 +122,8 @@ export default class Search {
   matchAll() {
     const matches = {};
 
+    console.log(this);
+
     Object.keys(this.docs).forEach((id) => {
       matches[id] = 1;
     });
