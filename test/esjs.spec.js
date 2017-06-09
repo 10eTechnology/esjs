@@ -190,6 +190,14 @@ describe('.search()', () => {
 
   idx.addDocs(searchDocs);
 
+  context('given matchAll', () => {
+    const results = idx.search({ matchAll: {} });
+
+    it('returns all docs', () => {
+      expect(searchIds(results)).to.eql([1, 2, 3, 4]);
+    });
+  });
+
   context('given a simple string', () => {
     const results = idx.search('sale');
 
@@ -289,7 +297,7 @@ describe('.search()', () => {
       });
 
       it('returns the expected results', () => {
-        expect(searchIds(results)).to.eql([3]);
+        expect(searchIds(results)).to.eql([4]);
       });
     });
 
@@ -306,7 +314,7 @@ describe('.search()', () => {
       });
 
       it('returns the expected results', () => {
-        expect(searchIds(results)).to.eql([3]);
+        expect(searchIds(results)).to.eql([4]);
       });
     });
   });
