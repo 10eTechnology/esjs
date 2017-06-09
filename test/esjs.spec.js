@@ -190,6 +190,14 @@ describe('.search()', () => {
 
   idx.addDocs(searchDocs);
 
+  context('given matchAll', () => {
+    const results = idx.search({ matchAll: {} });
+
+    it('returns all docs', () => {
+      expect(searchIds(results)).to.eql([1, 2, 3, 4]);
+    });
+  });
+
   context('given a simple string', () => {
     const results = idx.search('sale');
 
@@ -276,19 +284,38 @@ describe('.search()', () => {
   });
 
   context('given a query with filters', () => {
-    const results = idx.search({
-      must: {
-        match: { _all: 'weekend' },
-      },
-      filter: {
-        term: {
-          category: 'crime',
+    describe('given a single filter', () => {
+      const results = idx.search({
+        must: {
+          match: { _all: 'weekend' },
         },
-      },
+        filter: {
+          term: {
+            category: 'crime',
+          },
+        },
+      });
+
+      it('returns the expected results', () => {
+        expect(searchIds(results)).to.eql([4]);
+      });
     });
 
-    it('returns the expected results', () => {
-      expect(searchIds(results)).to.eql([3]);
+    describe('given an array of filters', () => {
+      const results = idx.search({
+        must: {
+          match: { _all: 'weekend' },
+        },
+        filter: [{
+          term: {
+            category: 'crime',
+          },
+        }],
+      });
+
+      it('returns the expected results', () => {
+        expect(searchIds(results)).to.eql([4]);
+      });
     });
   });
 });
