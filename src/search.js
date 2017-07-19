@@ -37,8 +37,12 @@ export default class Search {
     return query[key];
   }
 
-  static pipelineForType(input, indexType) {
-    const pipe = indexType === 'raw' ? 'tokenize' : 'run';
+  static pipelineForType(input, indexType, withStopwords) {
+    let pipe = indexType === 'raw' ? 'tokenize' : 'run';
+
+    if (withStopwords === false) {
+      pipe = `${pipe}WithoutStopwords`;
+    }
 
     return Pipeline[pipe](input);
   }
@@ -212,7 +216,11 @@ export default class Search {
     Object.keys(query).forEach((field) => {
       const value = Search.valueForType(query[field], indexType);
       const boost = this.boostFromQuery(field, query[field]);
-      const tokens = Search.pipelineForType(value, indexType);
+      const tokens = Search.pipelineForType(
+        value,
+        indexType,
+        this.idx.stopwords,
+      );
 
       fields[field] = { tokens, boost };
     });
@@ -223,7 +231,11 @@ export default class Search {
   allFieldsQuery(query, indexType) {
     const fields = {};
     const value = Search.valueForType(query, indexType);
-    const tokens = Search.pipelineForType(value, indexType);
+    const tokens = Search.pipelineForType(
+        value,
+        indexType,
+        this.idx.stopwords,
+      );
 
     Object.keys(this.idx.fields).forEach((field) => {
       const boost = this.boostFromQuery(field, query);

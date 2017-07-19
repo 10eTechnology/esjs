@@ -11,6 +11,7 @@ export default class ESjs {
     this.index = { tokenized: {}, raw: {} };
     this.storeDocs = config ? config.storeDocs : false;
     this.allowPartial = config ? config.allowPartial : false;
+    this.stopwords = config ? config.stopwords : true;
 
     if (json) {
       this.deserialize(json);
@@ -102,14 +103,18 @@ export default class ESjs {
   }
 
   addTokens(doc, field) {
-    const tokens = Pipeline.run(doc[field]);
+    const pipe = this.stopwords ? 'run' : 'runWithoutStopwords';
+    const tokens = Pipeline[pipe](doc[field]);
 
     this.updateDocFieldLength(doc, field, tokens.length);
     this.addTokensWithCounts(doc, field, tokens);
   }
 
   addTerms(doc, field) {
-    const tokens = Pipeline.tokenize(doc[field]);
+    const pipe = this.stopwords ? 'tokenize' : 'tokenizeWithoutStopwords';
+    const tokens = Pipeline[pipe](doc[field], {
+      stopwords: this.stopwords,
+    });
 
     this.addTokensWithCounts(doc, field, tokens, 'raw');
   }

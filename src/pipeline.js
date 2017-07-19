@@ -22,10 +22,25 @@ const Pipeline = {
 
     return runWithMiddlewares(input, middlewares);
   },
+  runWithoutStopwords: (input) => {
+    const middlewares = [
+      StandardTokenizer,
+      PorterStemmer,
+    ];
+
+    return runWithMiddlewares(input, middlewares);
+  },
   tokenize: (input) => {
     const middlewares = [
       StandardTokenizer,
       Stopwords,
+    ];
+
+    return runWithMiddlewares(input, middlewares);
+  },
+  tokenizeWithoutStopwords: (input) => {
+    const middlewares = [
+      StandardTokenizer,
     ];
 
     return runWithMiddlewares(input, middlewares);

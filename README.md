@@ -112,3 +112,10 @@ const idx = new ESjs({ fields, allowPartial: true });
 idx.search('lar');
 // [{ id: 1, score: 0.3 }]
 ```
+
+### Turning off stopwords
+
+You can turn off stopwords by setting `stopwords: false` in your configuration.
+
+**This is a temporary implementation.  Configuring the tokenizer pipeline
+will improve with time***
