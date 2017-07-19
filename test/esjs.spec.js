@@ -186,9 +186,21 @@ describe('.search()', () => {
     category: 'crime',
   }];
 
-  const idx = new ESjs({ fields: searchFields, storeDocs: true });
+  const idx = new ESjs({
+    fields:       searchFields,
+    storeDocs:    true,
+    allowPartial: true,
+  });
 
   idx.addDocs(searchDocs);
+
+  context.only('given a partial string', () => {
+    const results = idx.search('spe');
+
+    it('returns the expected results', () => {
+      expect(searchIds(results)).to.eql([4]);
+    });
+  });
 
   context('given a simple string', () => {
     const results = idx.search('sale');

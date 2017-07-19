@@ -4,11 +4,13 @@ import { tokenCount } from './tokenizers';
 import Search from './search';
 
 export default class ESjs {
+
   constructor(config = {}, json = '') {
     this.fields = config ? config.fields : {};
     this.docs = {};
     this.index = { tokenized: {}, raw: {} };
     this.storeDocs = config ? config.storeDocs : false;
+    this.allowPartial = config ? config.allowPartial : false;
 
     if (json) {
       this.deserialize(json);
@@ -123,6 +125,25 @@ export default class ESjs {
   }
 
   addToken(field, token, data, type = 'tokenized') {
+    if (this.allowPartial) {
+      this.addTokenSubstrings(field, token, data, type);
+    }
+
+    this.addTokenToNode(field, token, data, type);
+  }
+
+  addTokenSubstrings(field, token, data, type) {
+    for (let i = 1; i < token.length; i += 1) {
+      const str = token.substr(0, i);
+
+      this.addTokenToNode(field, str, {
+        id: data.id,
+        tf: Math.sqrt(data.tf / str.length),
+      }, type);
+    }
+  }
+
+  addTokenToNode(field, token, data, type) {
     const node = this.getNode(field, token, type, true);
 
     if (!node.docs[data.id]) {

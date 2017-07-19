@@ -95,3 +95,20 @@ const idx = new ESjs({ fields, storeDocs: true });
 idx.search('Larry');
 // [{ id: 1, score: 0.9, doc: {...} }]
 ```
+
+### Partial string matches
+
+You can configure ESjs to search partial strings (from the beginning of each)
+word, at the cost of a greatly increased index size.
+
+Partial matches are penalized during the scoring phase, causing them to appear
+below matches on full words.
+
+```javascript
+const idx = new ESjs({ fields, allowPartial: true });
+
+// add some docs, then
+
+idx.search('lar');
+// [{ id: 1, score: 0.3 }]
+```
