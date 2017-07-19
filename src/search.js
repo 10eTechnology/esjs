@@ -51,8 +51,10 @@ export default class Search {
   }
 
   search() {
+    // return all docs if the must obj is empty
     const matches = this.filterResults(
-      this.searchFields(this.query.must),
+      this.query.matchAll ? this.matchAll()
+        : this.searchFields(this.query.must),
     );
 
     const results = [];
@@ -69,10 +71,14 @@ export default class Search {
   searchFields(queries) {
     let docs = {};
 
-    Object.keys(queries).forEach((type) => {
-      const results = this[type](queries[type]);
+    const queriesArray = Array.isArray(queries) ? queries : [queries];
 
-      docs = Search.mergeMatches(docs, results);
+    queriesArray.forEach((q) => {
+      Object.keys(q).forEach((type) => {
+        const results = this[type](q[type]);
+
+        docs = Search.mergeMatches(docs, results);
+      });
     });
 
     return docs;
@@ -82,17 +88,29 @@ export default class Search {
     if (!this.query.filter) {
       return results;
     }
-
+    if (Array.isArray(this.query.filter) && this.query.filter.length === 0) {
+      return results;
+    }
     const docIds = Object.keys(this.searchFields(this.query.filter));
     const filtered = {};
 
     Object.keys(results).forEach((id) => {
-      if (docIds.indexOf(id) === -1) {
+      if (docIds.indexOf(id) !== -1) {
         filtered[id] = results[id];
       }
     });
 
     return filtered;
+  }
+
+  matchAll() {
+    const matches = {};
+
+    Object.keys(this.idx.docs).forEach((id) => {
+      matches[id] = 1;
+    });
+
+    return matches;
   }
 
   match(query) {
