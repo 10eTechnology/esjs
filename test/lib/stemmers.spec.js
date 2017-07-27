@@ -1,7 +1,7 @@
 /* eslint-disable import/no-extraneous-dependencies */
 import expect from 'expect.js';
 /* eslint-enable import/no-extraneous-dependencies */
-import { PorterStemmer, SnowballStemmer } from '../../src/stemmers';
+import { PorterStemmer } from '../../src/stemmers';
 
 describe('PorterStemmer', () => {
   const input = [

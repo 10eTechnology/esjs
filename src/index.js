@@ -4,7 +4,6 @@ import { tokenCount } from './tokenizers';
 import Search from './search';
 
 export default class ESjs {
-
   constructor(config = {}, json = '') {
     this.fields = config ? config.fields : {};
     this.docs = {};

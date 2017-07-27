@@ -1,8 +1,17 @@
 {
-  "extends": "airbnb",
-  "plugins": ["jsx-a11y", "import"],
+  "extends": [
+    "airbnb"
+  ],
   "env": {
     "mocha": true
+  },
+  "plugins": ["react", "jsx-a11y", "import"],
+  "settings": {
+    "import/resolver": {
+      "webpack": {
+        "config": "./web/webpack.config.dev.js"
+      }
+    }
   },
   "rules": {
     "complexity": "error",
@@ -31,7 +40,7 @@
       "outerIIFEBody": 1,
       "MemberExpression": 1,
       "CallExpression": {
-        "parameters": "first"
+        "arguments": "first"
       },
       "FunctionDeclaration": {
         "parameters": 1,
@@ -41,6 +50,10 @@
         "parameters": 1,
         "body": 1
       }
-    }]
+    }],
+    "react/jsx-filename-extension": ["error", {
+      "extensions": [".js", ".jsx"]
+    }],
+    "react/prefer-stateless-function": "error"
   }
 }

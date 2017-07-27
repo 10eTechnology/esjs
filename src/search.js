@@ -232,10 +232,10 @@ export default class Search {
     const fields = {};
     const value = Search.valueForType(query, indexType);
     const tokens = Search.pipelineForType(
-        value,
-        indexType,
-        this.idx.stopwords,
-      );
+      value,
+      indexType,
+      this.idx.stopwords,
+    );
 
     Object.keys(this.idx.fields).forEach((field) => {
       const boost = this.boostFromQuery(field, query);
