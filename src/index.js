@@ -101,19 +101,31 @@ export default class ESjs {
     this.addTerms(doc, field);
   }
 
+  pipesForTokens() {
+    const pipes = ['whitespace', 'strip', 'tokenize', 'stopwords', 'stemmer'];
+
+    // eventually could be more elaborate based on configuration
+    return pipes.filter(pipe => this.stopwords || pipe !== 'stopwords');
+  }
+
   addTokens(doc, field) {
-    const pipe = this.stopwords ? 'run' : 'runWithoutStopwords';
-    const tokens = Pipeline[pipe](doc[field]);
+    const pipes = this.pipesForTokens(field);
+    const tokens = Pipeline.run(doc[field], pipes);
 
     this.updateDocFieldLength(doc, field, tokens.length);
     this.addTokensWithCounts(doc, field, tokens);
   }
 
+  pipesForTerms() {
+    const pipes = ['whitespace', 'strip', 'stopwords'];
+
+    // eventually could be more elaborate based on configuration
+    return pipes.filter(pipe => this.stopwords || pipe !== 'stopwords');
+  }
+
   addTerms(doc, field) {
-    const pipe = this.stopwords ? 'tokenize' : 'tokenizeWithoutStopwords';
-    const tokens = Pipeline[pipe](doc[field], {
-      stopwords: this.stopwords,
-    });
+    const pipes = this.pipesForTerms(field);
+    const tokens = Pipeline.run(doc[field], pipes);
 
     this.addTokensWithCounts(doc, field, tokens, 'raw');
   }

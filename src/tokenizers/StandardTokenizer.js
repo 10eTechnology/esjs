@@ -1,20 +1,17 @@
-const regexp =
-  /[\u2000-\u206F\u2E00-\u2E7F\\'!"#$%&()*+,-./:;<=>?@[\]^_`{|}~]/g;
+import charRegex from '../charRegex';
+
+const reTokens = new RegExp(charRegex, 'g');
 
 const StandardTokenizer = {
-  run: (input) => {
-    const tokens = [];
-
-    if (!input) {
-      return tokens;
-    }
-
-    return input
-      .replace(regexp, ' ')
+  run: input => input.reduce((tokens, word) => {
+    const clean = word
+      .replace(reTokens, ' ')
       .toLowerCase()
       .split(/\s+/)
-      .filter(t => t !== '');
-  },
+      .filter(t => !!t);
+
+    return (clean.length > 0) ? tokens.concat(clean) : tokens;
+  }, []),
 };
 
 export default StandardTokenizer;
