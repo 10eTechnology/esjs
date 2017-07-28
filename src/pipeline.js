@@ -1,50 +1,36 @@
 import { StandardTokenizer } from './tokenizers';
 import { PorterStemmer } from './stemmers';
 import { Stopwords } from './stopwords';
+import charRegex from './charRegex';
 
-const runWithMiddlewares = (input, middlewares) => {
-  let output = String(input);
+const Whitespace = {
+  run: input => String(input).split(/\s+/),
+};
 
-  middlewares.forEach((middleware) => {
-    output = middleware.run(output);
-  });
+const startChars = new RegExp(`^${charRegex}`);
+const endChars = new RegExp(`${charRegex}$`);
+const StripChars = {
+  run: input => input.reduce((words, word) => {
+    const clean = word.replace(startChars, '').replace(endChars, '');
 
-  return output;
+    if (clean) {
+      words.push(clean);
+    }
+
+    return words;
+  }, []),
+};
+
+const pipeMap = {
+  whitespace: Whitespace,
+  strip:      StripChars,
+  tokenize:   StandardTokenizer,
+  stemmer:    PorterStemmer,
+  stopwords:  Stopwords,
 };
 
 const Pipeline = {
-  run: (input) => {
-    const middlewares = [
-      StandardTokenizer,
-      Stopwords,
-      PorterStemmer,
-    ];
-
-    return runWithMiddlewares(input, middlewares);
-  },
-  runWithoutStopwords: (input) => {
-    const middlewares = [
-      StandardTokenizer,
-      PorterStemmer,
-    ];
-
-    return runWithMiddlewares(input, middlewares);
-  },
-  tokenize: (input) => {
-    const middlewares = [
-      StandardTokenizer,
-      Stopwords,
-    ];
-
-    return runWithMiddlewares(input, middlewares);
-  },
-  tokenizeWithoutStopwords: (input) => {
-    const middlewares = [
-      StandardTokenizer,
-    ];
-
-    return runWithMiddlewares(input, middlewares);
-  },
+  run: (input, pipes) => pipes.reduce((s, pipe) => pipeMap[pipe].run(s), input),
 };
 
 export default Pipeline;

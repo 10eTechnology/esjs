@@ -11,9 +11,10 @@ const fields = {
 };
 
 const docs = [{
-  id:    1,
-  title: 'title',
-  body:  'body',
+  id:       1,
+  title:    'title',
+  body:     'body',
+  category: 'category',
 }];
 
 const searchDocs = [{
@@ -30,7 +31,7 @@ const searchDocs = [{
   id:       3,
   title:    'Tickets on sale for festival on the Boardwalk this weekend',
   body:     'Popular music and delicious food to be enjoyed by all.',
-  category: 'events',
+  category: 'live_events',
 }, {
   id:       4,
   title:    'Special: I got out of jail for free!',
@@ -62,7 +63,6 @@ function storeDocs(config) {
 function searchIds(results) {
   return results.map(result => result.id);
 }
-
 
 describe('.new()', () => {
   context('given an index configuration', () => {
@@ -296,7 +296,7 @@ describe('.search()', () => {
   });
 
   context('given a query with filters', () => {
-    describe('given a single filter', () => {
+    context('given a single filter', () => {
       const results = idx.search({
         must: {
           match: { _all: 'weekend' },
@@ -313,7 +313,24 @@ describe('.search()', () => {
       });
     });
 
-    describe('given an array of filters', () => {
+    context('given a term with an underscore', () => {
+      const results = idx.search({
+        must: {
+          match: { _all: 'popular' },
+        },
+        filter: {
+          term: {
+            category: 'live_events',
+          },
+        },
+      });
+
+      it('returns the expected results', () => {
+        expect(searchIds(results)).to.eql([3]);
+      });
+    });
+
+    context('given an array of filters', () => {
       const results = idx.search({
         must: {
           match: { _all: 'weekend' },

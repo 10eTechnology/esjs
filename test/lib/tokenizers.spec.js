@@ -4,7 +4,9 @@ import expect from 'expect.js';
 import { StandardTokenizer, tokenCount } from '../../src/tokenizers';
 
 describe('StandardTokenizer', () => {
-  const input = 'This.String. has#much punctions! They \'should\' be "removed"';
+  const input =
+    'This.String. has#much punctions! They \'should\' be "removed"'
+      .split(/\s+/);
 
   it('produces the expected output', () => {
     expect(StandardTokenizer.run(input)).to.eql([

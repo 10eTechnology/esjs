@@ -1,7 +1,7 @@
 import { stemmer } from 'porter-stemmer';
 
 const PorterStemmer = {
-  run: words => words.map(w => stemmer(w)),
+  run: input => input.map(w => stemmer(w)),
 };
 
 export default PorterStemmer;
