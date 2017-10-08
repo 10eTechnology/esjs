@@ -254,6 +254,25 @@ describe('.search()', () => {
     });
   });
 
+  context('given a document update', () => {
+    idx.addDoc({
+      id:       4,
+      title:    'Special: I got out of jail for free!',
+      body:     'You wouldn\'t believe the new regulations.',
+      category: 'crime',
+    });
+
+    const results = idx.search({
+      must: {
+        match: { _all: 'weekend' },
+      },
+    });
+
+    it('should no longer return the updated document', () => {
+      expect(searchIds(results)).to.eql([3]);
+    });
+  });
+
   context('given a query that changes boosting', () => {
     const results = idx.search({
       must: {
