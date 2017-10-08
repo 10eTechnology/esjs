@@ -255,6 +255,7 @@ describe('.search()', () => {
   });
 
   context('given a document update', () => {
+    // document 4 should no longer match on 'weekend' post-update
     idx.addDoc({
       id:       4,
       title:    'Special: I got out of jail for free!',
