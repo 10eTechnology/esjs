@@ -20,6 +20,7 @@ const fields = {
   name:        { boost: 2 },
   description: { boost: 1 },
   job:         null,
+  status:      { analyzer: 'keyword' },
 };
 
 const idx = new ESjs({ fields });
@@ -29,6 +30,7 @@ idx.addDoc({
   name: 'Larry Jones',
   description: 'A nice guy',
   job: 'plumber',
+  status: 'AVAILABLE',
 });
 
 idx.addDoc({
@@ -36,6 +38,7 @@ idx.addDoc({
   name: 'Moe Jones',
   description: "Larry's brother, a decent guy",
   job: 'architect',
+  status: 'AVAILABLE',
 });
 
 idx.addDoc({
@@ -43,6 +46,7 @@ idx.addDoc({
   name: 'Curly Jones',
   description: "Moe's brother, a funny guy",
   job: 'mathematician',
+  status: 'UNAVAILABLE',
 });
 
 idx.search('Larry');
@@ -77,6 +81,19 @@ idx.search({
     term: { job: 'plumber' }
   }],
 });
+// []
+idx.search({
+  must: {
+    match: {
+      name: 'Jones',
+    },
+  },
+  filter: [{
+    term: { status: 'AVAILABLE' }, 
+  }],
+});
+// [{ id: 1, score: 0.1 }, { id: 2, score: 0.1 }]
+idx.search('AVAILABLE');
 // []
 
 const json = idx.serialize();
@@ -119,3 +136,20 @@ You can turn off stopwords by setting `stopwords: false` in your configuration.
 
 **This is a temporary implementation.  Configuring the tokenizer pipeline
 will improve with time***
+
+## Field analyzer
+
+You may specify a custom `analyzer` per field with the `analyzer` config option.
+```javascript
+const fields = {
+  status: { analyzer: 'keyword' },
+};
+```
+Currently, the only analyzer supported is `keyword` or `standard`. This option defaults to `standard`.
+
+### `standard`
+Default behavior. Field will be searchable through text search or term filters.
+
+### `keyword`
+
+The `keyword` analyzer will *not* index specified field for text searching. The only way to surface results containing a `keyword` field is through the an exact match on a `filter` `term` query configuration.

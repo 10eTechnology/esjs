@@ -22,21 +22,25 @@ const searchDocs = [{
   title:    'Reading Railroad on sale',
   body:     'The popular Reading Railroad goes on the auction block.',
   category: 'news',
+  status:   'NEW',
 }, {
   id:       2,
   title:    'Mystery sale at Park Place apartments',
   body:     'Police responded today to a mysterious sign in the yard.',
   category: 'crime',
+  status:   'PUBLISHED',
 }, {
   id:       3,
   title:    'Tickets on sale for festival on the Boardwalk this weekend',
   body:     'Popular music and delicious food to be enjoyed by all.',
   category: 'live_events',
+  status:   'NEW',
 }, {
   id:       4,
   title:    'Special: I got out of jail for free!',
   body:     'Read about a life of crime in the Weekend journal.',
   category: 'crime',
+  status:   'PENDING_REVIEW',
 }];
 
 const searchFields = {
@@ -44,6 +48,7 @@ const searchFields = {
   body:     { boost: 2 },
   category: null,
   unused:   null,
+  status:   { analyzer: 'keyword' },
 };
 
 const storedDocs = {};
@@ -71,6 +76,18 @@ describe('.new()', () => {
 
     it('stores the config', () => {
       expect(json.fields).to.eql(fields);
+    });
+  });
+
+  context('given an unsupported analyzer', () => {
+    const idx = new ESjs({ fields: { name: { analyzer: 'unsupported' } } });
+
+    it('throws an exception upon indexing doc', () => {
+      expect(() => {
+        idx.addDoc({
+          name: 'bob',
+        });
+      }).to.throwError();
     });
   });
 
@@ -344,6 +361,33 @@ describe('.search()', () => {
 
       it('returns the expected results', () => {
         expect(searchIds(results)).to.eql([4]);
+      });
+    });
+
+    context('given an exact string matching a "keyword" field', () => {
+      const results = idx.search('PUBLISHED');
+
+      it('returns 0 results', () => {
+        expect(results.length).to.be(0);
+      });
+    });
+
+    context('given a term matching a "keyword" field', () => {
+      const results = idx.search({
+        must: {
+          match: {
+            title: 'sale',
+          },
+        },
+        filter: [
+          {
+            term: { status: 'NEW' },
+          },
+        ],
+      });
+
+      it('returns result with matching keyword', () => {
+        expect(results.length).to.be(2);
       });
     });
   });

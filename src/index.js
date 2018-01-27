@@ -97,8 +97,24 @@ export default class ESjs {
     }
 
     this.ensureFieldIndex(field);
-    this.addTokens(doc, field);
-    this.addTerms(doc, field);
+
+    let analyzer = 'standard';
+
+    if (this.fields[field] && this.fields[field].analyzer) {
+      analyzer = this.fields[field].analyzer;
+    }
+
+    switch (analyzer) {
+      case 'keyword':
+        this.addTerms(doc, field);
+        break;
+      case 'standard':
+        this.addTokens(doc, field);
+        this.addTerms(doc, field);
+        break;
+      default:
+        throw new Error(`Unsupported analyzer, ${analyzer}`);
+    }
   }
 
   pipesForTokens() {
