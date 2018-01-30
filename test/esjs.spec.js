@@ -79,20 +79,8 @@ describe('.new()', () => {
     });
   });
 
-  context('given an unsupported analyzer', () => {
-    const idx = new ESjs({ fields: { name: { analyzer: 'unsupported' } } });
-
-    it('throws an exception upon indexing doc', () => {
-      expect(() => {
-        idx.addDoc({
-          name: 'bob',
-        });
-      }).to.throwError();
-    });
-  });
-
   context('given a seralized index', () => {
-    const idx = new ESjs(null, JSON.stringify(serializedIndex));
+    const idx = new ESjs({}, JSON.stringify(serializedIndex));
     const json = JSON.parse(idx.serialize());
 
     it('loads the fields', () => {
@@ -112,7 +100,7 @@ describe('.new()', () => {
     it('throws an error', () => {
       expect(() => {
         /* eslint-disable no-new */
-        new ESjs(null, JSON.stringify({ version: '0.0' }));
+        new ESjs({}, JSON.stringify({ version: '0.0' }));
         /* eslint-enable no-new */
       }).to.throwError("Error: Can't deserialize from version 0.0");
     });

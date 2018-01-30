@@ -12,7 +12,7 @@
     "eslint": "./node_modules/.bin/eslint ./src ./test",
     "performance": "node ./performance/index.js",
     "reset": "rm -rf ./node_modules yarn.lock; yarn cache clean; yarn install",
-    "test": "mocha --require babel-register ./test/esjs.spec.js ./test/**/*.spec.js"
+    "test": "mocha --require babel-register ./test/esjs.spec.js ./test/**/*.spec.js ./test/**/**/*.spec.js"
   },
   "devDependencies": {
     "babel-cli": "^6.14.0",

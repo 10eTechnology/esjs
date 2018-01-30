@@ -2,15 +2,18 @@ import Pipeline from './pipeline';
 import Serializer from './serializer';
 import { tokenCount } from './tokenizers';
 import Search from './search';
+import { normalize as normalizeConfig } from './config';
 
 export default class ESjs {
   constructor(config = {}, json = '') {
-    this.fields = config ? config.fields : {};
+    const normalizedConfig = normalizeConfig(config);
+
+    this.fields = normalizedConfig.fields;
     this.docs = {};
     this.index = { tokenized: {}, raw: {} };
-    this.storeDocs = config ? config.storeDocs : false;
-    this.allowPartial = config ? config.allowPartial : false;
-    this.stopwords = config ? config.stopwords : true;
+    this.storeDocs = normalizedConfig.storeDocs;
+    this.allowPartial = normalizedConfig.allowPartial;
+    this.stopwords = normalizedConfig.stopwords;
 
     if (json) {
       this.deserialize(json);
