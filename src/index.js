@@ -107,17 +107,12 @@ export default class ESjs {
       analyzer = this.fields[field].analyzer;
     }
 
-    switch (analyzer) {
-      case 'keyword':
-        this.addTerms(doc, field);
-        break;
-      case 'standard':
-        this.addTokens(doc, field);
-        this.addTerms(doc, field);
-        break;
-      default:
-        throw new Error(`Unsupported analyzer, ${analyzer}`);
-    }
+    const analyzerToIndexOps = {
+      keyword:  [this.addTerms],
+      standard: [this.addTokens, this.addTerms],
+    };
+
+    analyzerToIndexOps[analyzer].forEach(op => op.call(this, doc, field));
   }
 
   pipesForTokens() {
