@@ -358,7 +358,7 @@ describe('.search()', () => {
       });
     });
 
-    context('given a term matching a "keyword" field', () => {
+    context('given a filter term matching a "keyword" field', () => {
       const results = idx.search({
         must: {
           match: {
@@ -372,8 +372,48 @@ describe('.search()', () => {
         ],
       });
 
-      it('returns result with matching keyword', () => {
+      it('returns results filtered by keyword', () => {
         expect(results.length).to.be(2);
+      });
+    });
+
+    context('given a term exact matching a "keyword" field', () => {
+      const results = idx.search({
+        must: {
+          match: {
+            title: 'sale',
+          },
+          term: {
+            status: {
+              value: 'NEW',
+              boost: 3,
+            },
+          },
+        },
+      });
+
+      it('returns results in expected order', () => {
+        expect(searchIds(results)).to.eql([1, 3, 2]);
+      });
+    });
+
+    context('given a term with a partial "keyword" field', () => {
+      const results = idx.search({
+        must: {
+          match: {
+            title: 'sale',
+          },
+          term: {
+            status: {
+              value: 'ne',
+              boost: 3,
+            },
+          },
+        },
+      });
+
+      it('Doesnt have any effect on the ordering of results', () => {
+        expect(searchIds(results)).to.eql([1, 2, 3]);
       });
     });
   });
