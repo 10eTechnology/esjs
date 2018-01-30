@@ -1,6 +1,4 @@
-/* eslint-disable import/no-extraneous-dependencies */
 import expect from 'expect.js';
-/* eslint-enable import/no-extraneous-dependencies */
 import ESjs from '../src';
 import serializedIndex from './fixtures/serialized-index.json';
 import indexedDocs from './fixtures/indexed-docs.json';
@@ -22,21 +20,25 @@ const searchDocs = [{
   title:    'Reading Railroad on sale',
   body:     'The popular Reading Railroad goes on the auction block.',
   category: 'news',
+  status:   'NEW',
 }, {
   id:       2,
   title:    'Mystery sale at Park Place apartments',
   body:     'Police responded today to a mysterious sign in the yard.',
   category: 'crime',
+  status:   'PUBLISHED',
 }, {
   id:       3,
   title:    'Tickets on sale for festival on the Boardwalk this weekend',
   body:     'Popular music and delicious food to be enjoyed by all.',
   category: 'live_events',
+  status:   'NEW',
 }, {
   id:       4,
   title:    'Special: I got out of jail for free!',
   body:     'Read about a life of crime in the Weekend journal.',
   category: 'crime',
+  status:   'PENDING_REVIEW',
 }];
 
 const searchFields = {
@@ -44,6 +46,7 @@ const searchFields = {
   body:     { boost: 2 },
   category: null,
   unused:   null,
+  status:   { analyzer: 'keyword' },
 };
 
 const storedDocs = {};
@@ -75,7 +78,7 @@ describe('.new()', () => {
   });
 
   context('given a seralized index', () => {
-    const idx = new ESjs(null, JSON.stringify(serializedIndex));
+    const idx = new ESjs({}, JSON.stringify(serializedIndex));
     const json = JSON.parse(idx.serialize());
 
     it('loads the fields', () => {
@@ -95,7 +98,7 @@ describe('.new()', () => {
     it('throws an error', () => {
       expect(() => {
         /* eslint-disable no-new */
-        new ESjs(null, JSON.stringify({ version: '0.0' }));
+        new ESjs({}, JSON.stringify({ version: '0.0' }));
         /* eslint-enable no-new */
       }).to.throwError("Error: Can't deserialize from version 0.0");
     });
@@ -344,6 +347,73 @@ describe('.search()', () => {
 
       it('returns the expected results', () => {
         expect(searchIds(results)).to.eql([4]);
+      });
+    });
+
+    context('given an exact string matching a "keyword" field', () => {
+      const results = idx.search('PUBLISHED');
+
+      it('returns 0 results', () => {
+        expect(results.length).to.be(0);
+      });
+    });
+
+    context('given a filter term matching a "keyword" field', () => {
+      const results = idx.search({
+        must: {
+          match: {
+            title: 'sale',
+          },
+        },
+        filter: [
+          {
+            term: { status: 'NEW' },
+          },
+        ],
+      });
+
+      it('returns results filtered by keyword', () => {
+        expect(results.length).to.be(2);
+      });
+    });
+
+    context('given a term exact matching a "keyword" field', () => {
+      const results = idx.search({
+        must: {
+          match: {
+            title: 'sale',
+          },
+          term: {
+            status: {
+              value: 'NEW',
+              boost: 3,
+            },
+          },
+        },
+      });
+
+      it('returns results in expected order', () => {
+        expect(searchIds(results)).to.eql([1, 3, 2]);
+      });
+    });
+
+    context('given a term with a partial "keyword" field', () => {
+      const results = idx.search({
+        must: {
+          match: {
+            title: 'sale',
+          },
+          term: {
+            status: {
+              value: 'ne',
+              boost: 3,
+            },
+          },
+        },
+      });
+
+      it('Doesnt have any effect on the ordering of results', () => {
+        expect(searchIds(results)).to.eql([1, 2, 3]);
       });
     });
   });
