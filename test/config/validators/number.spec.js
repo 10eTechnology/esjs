@@ -1,6 +1,4 @@
-/* eslint-disable import/no-extraneous-dependencies */
 import expect from 'expect.js';
-/* eslint-enable import/no-extraneous-dependencies */
 import number from '../../../src/config/validators/number';
 
 describe('number validator', () => {

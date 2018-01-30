@@ -1,6 +1,4 @@
-/* eslint-disable import/no-extraneous-dependencies */
 import expect from 'expect.js';
-/* eslint-enable import/no-extraneous-dependencies */
 import Validators from '../../../src/config/validators';
 
 describe('shape validator', () => {

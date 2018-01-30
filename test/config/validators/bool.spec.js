@@ -1,6 +1,4 @@
-/* eslint-disable import/no-extraneous-dependencies */
 import expect from 'expect.js';
-/* eslint-enable import/no-extraneous-dependencies */
 import bool from '../../../src/config/validators/bool';
 
 describe('bool validator', () => {

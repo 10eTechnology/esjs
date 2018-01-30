@@ -1,6 +1,4 @@
-/* eslint-disable import/no-extraneous-dependencies */
 import expect from 'expect.js';
-/* eslint-enable import/no-extraneous-dependencies */
 import oneOf from '../../../src/config/validators/oneOf';
 import bool from '../../../src/config/validators/bool';
 import number from '../../../src/config/validators/number';
