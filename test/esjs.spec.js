@@ -316,6 +316,42 @@ describe('.search()', () => {
       });
     });
 
+    context('given two filters', () => {
+      const results = idx.search({
+        matchAll: {},
+        filter:   [
+          {
+            term: { category: 'crime' },
+          },
+          {
+            term: { status: 'PENDING_REVIEW' },
+          }],
+      });
+
+      it('returns the expected results', () => {
+        expect(searchIds(results)).to.eql([4]);
+      });
+    });
+
+    context('given query and two filters', () => {
+      const results = idx.search({
+        must: {
+          match: { title: 'sale' },
+        },
+        filter: [
+          {
+            term: { category: 'news' },
+          },
+          {
+            term: { status: 'NEW' },
+          }],
+      });
+
+      it('returns the expected results', () => {
+        expect(searchIds(results)).to.eql([1]);
+      });
+    });
+
     context('given a term with an underscore', () => {
       const results = idx.search({
         must: {

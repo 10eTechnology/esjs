@@ -85,16 +85,32 @@ export default class Search {
     if (Array.isArray(this.query.filter) && this.query.filter.length === 0) {
       return results;
     }
-    const docIds = Object.keys(this.searchFields(this.query.filter));
-    const filtered = {};
 
-    Object.keys(results).forEach((id) => {
-      if (docIds.indexOf(id) !== -1) {
-        filtered[id] = results[id];
-      }
+    const resultIds = Object.keys(results);
+
+    if (resultIds.length === 0) {
+      return results;
+    }
+
+    const filtersArray = Array.isArray(this.query.filter) ? this.query.filter : [this.query.filter];
+    const resultsClone = Object.assign({}, results);
+
+    filtersArray.forEach((filter) => {
+      Object.keys(filter).forEach((operation) => {
+        const filterResults = this[operation](filter[operation]);
+
+        // Filter behavior should function as an AND operation.
+        // Results from EVERY filter query should be present
+        // in our initial result set.
+        resultIds.forEach((id) => {
+          if (typeof filterResults[id] === 'undefined') {
+            delete resultsClone[id];
+          }
+        });
+      });
     });
 
-    return filtered;
+    return resultsClone;
   }
 
   matchAll() {
