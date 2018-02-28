@@ -34,10 +34,6 @@ export default class Search {
       return query;
     }
 
-    if (Array.isArray(query)) {
-      return query;
-    }
-
     return query[key];
   }
 
