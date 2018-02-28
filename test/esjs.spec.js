@@ -39,6 +39,13 @@ const searchDocs = [{
   body:     'Read about a life of crime in the Weekend journal.',
   category: 'crime',
   status:   'PENDING_REVIEW',
+},
+{
+  id:       5,
+  title:    'Bitcoin surges through 12k!',
+  body:     'Learn how you can capitalize during this financial revolution.',
+  category: 'news',
+  status:   'PENDING_REVIEW',
 }];
 
 const searchFields = {
@@ -251,7 +258,7 @@ describe('.search()', () => {
     });
 
     it('returns all docs', () => {
-      expect(searchIds(results)).to.eql([1, 2, 3, 4]);
+      expect(searchIds(results)).to.eql([1, 2, 3, 4, 5]);
     });
   });
 
@@ -372,6 +379,28 @@ describe('.search()', () => {
         must: {
           terms: {
             status: ['PUBLISHED', 'PENDING_REVIEW'],
+          },
+        },
+      });
+    });
+
+    it('returns the expected results', () => {
+      expect(searchIds(results)).to.eql([2, 4, 5]);
+    });
+  });
+
+  context('given a terms filter and term filter', () => {
+    let results = null;
+
+    beforeEach(() => {
+      results = idx.search({
+        matchAll: {},
+        filter:   {
+          terms: {
+            status: ['PUBLISHED', 'PENDING_REVIEW'],
+          },
+          term: {
+            category: 'crime',
           },
         },
       });
