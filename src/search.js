@@ -47,7 +47,8 @@ export default class Search {
   search() {
     // return all docs if the must obj is empty
     const matches = this.filterResults(
-      this.query.matchAll ? this.matchAll()
+      this.query.matchAll
+        ? this.matchAll()
         : this.searchFields(this.query.must),
     );
 
@@ -131,6 +132,10 @@ export default class Search {
     return this.matchOnIndex(query, 'raw');
   }
 
+  terms(query) {
+    return this.matchOnIndex(query, 'raw');
+  }
+
   matchOnIndex(query, indexType) {
     let matches = {};
     const fields = this.fieldsFromQuery(query, indexType);
@@ -138,6 +143,7 @@ export default class Search {
     Object.keys(fields).forEach((field) => {
       const results = this.matchField(field, fields[field], indexType);
 
+      // console.log('results', results);
       matches = Search.mergeMatches(matches, results);
     });
 
@@ -148,6 +154,7 @@ export default class Search {
     const matches = {};
 
     query.tokens.forEach((token) => {
+      // console.log('token', token);
       const node = this.idx.getNode(field, token, indexType);
 
       if (node) {

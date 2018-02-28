@@ -69,8 +69,13 @@ function searchIds(results) {
 
 describe('.new()', () => {
   context('given an index configuration', () => {
-    const idx = new ESjs({ fields });
-    const json = JSON.parse(idx.serialize());
+    let json = null;
+
+    beforeEach(() => {
+      const idx = new ESjs({ fields });
+
+      json = JSON.parse(idx.serialize());
+    });
 
     it('stores the config', () => {
       expect(json.fields).to.eql(fields);
@@ -78,8 +83,13 @@ describe('.new()', () => {
   });
 
   context('given a seralized index', () => {
-    const idx = new ESjs({}, JSON.stringify(serializedIndex));
-    const json = JSON.parse(idx.serialize());
+    let json = null;
+
+    beforeEach(() => {
+      const idx = new ESjs({}, JSON.stringify(serializedIndex));
+
+      json = JSON.parse(idx.serialize());
+    });
 
     it('loads the fields', () => {
       expect(json.fields).to.eql(serializedIndex.fields);
@@ -106,7 +116,11 @@ describe('.new()', () => {
 });
 
 describe('.serialize()', () => {
-  const json = storeDocs({ fields, storeDocs: true });
+  let json = null;
+
+  beforeEach(() => {
+    json = storeDocs({ fields, storeDocs: true });
+  });
 
   it('serializes the version', () => {
     expect(json.version).to.equal('1.0');
@@ -146,7 +160,11 @@ describe('.addDoc()', () => {
   });
 
   context('given storeDocs: false', () => {
-    const json = storeDocs({ fields });
+    let json = null;
+
+    beforeEach(() => {
+      json = storeDocs({ fields });
+    });
 
     it('indexes the docs', () => {
       expect(json.index).to.eql(indexedDocs);
@@ -160,7 +178,11 @@ describe('.addDoc()', () => {
   });
 
   context('given storeDocs: true', () => {
-    const json = storeDocs({ fields, storeDocs: true });
+    let json = null;
+
+    beforeEach(() => {
+      json = storeDocs({ fields, storeDocs: true });
+    });
 
     it('stores the docs', () => {
       expect(json.docs).to.eql(storedDocs);
@@ -168,7 +190,11 @@ describe('.addDoc()', () => {
   });
 
   context('given a null field value', () => {
-    const idx = new ESjs({ fields });
+    let idx = null;
+
+    beforeEach(() => {
+      idx = new ESjs({ fields });
+    });
 
     it('does not throw an error', () => {
       expect(() => {
@@ -178,7 +204,11 @@ describe('.addDoc()', () => {
   });
 
   context('given an integer field value', () => {
-    const idx = new ESjs({ fields: { age: null } });
+    let idx = null;
+
+    beforeEach(() => {
+      idx = new ESjs({ fields: { age: null } });
+    });
 
     it('does not throw an error', () => {
       expect(() => {
@@ -189,16 +219,24 @@ describe('.addDoc()', () => {
 });
 
 describe('.search()', () => {
-  const idx = new ESjs({
-    fields:       searchFields,
-    storeDocs:    true,
-    allowPartial: true,
+  let idx = null;
+
+  beforeEach(() => {
+    idx = new ESjs({
+      fields:       searchFields,
+      storeDocs:    true,
+      allowPartial: true,
+    });
+
+    idx.addDocs(searchDocs);
   });
 
-  idx.addDocs(searchDocs);
-
   context('given a partial string', () => {
-    const results = idx.search('spe');
+    let results = null;
+
+    beforeEach(() => {
+      results = idx.search('spe');
+    });
 
     it('returns the expected results', () => {
       expect(searchIds(results)).to.eql([4]);
@@ -206,7 +244,11 @@ describe('.search()', () => {
   });
 
   context('given matchAll', () => {
-    const results = idx.search({ matchAll: {} });
+    let results = null;
+
+    beforeEach(() => {
+      results = idx.search({ matchAll: {} });
+    });
 
     it('returns all docs', () => {
       expect(searchIds(results)).to.eql([1, 2, 3, 4]);
@@ -214,7 +256,11 @@ describe('.search()', () => {
   });
 
   context('given a simple string', () => {
-    const results = idx.search('sale');
+    let results = null;
+
+    beforeEach(() => {
+      results = idx.search('sale');
+    });
 
     it('returns the expected results', () => {
       expect(searchIds(results)).to.eql([1, 2, 3]);
@@ -226,7 +272,11 @@ describe('.search()', () => {
   });
 
   context('given a simple multi term string', () => {
-    const results = idx.search('mysterious sale');
+    let results = null;
+
+    beforeEach(() => {
+      results = idx.search('mysterious sale');
+    });
 
     it('returns the expected results', () => {
       expect(searchIds(results)).to.eql([2, 1, 3]);
@@ -238,7 +288,11 @@ describe('.search()', () => {
   });
 
   context('given a stemmable string', () => {
-    const results = idx.search('reading');
+    let results = null;
+
+    beforeEach(() => {
+      results = idx.search('reading');
+    });
 
     it('returns the expected results', () => {
       expect(searchIds(results)).to.eql([1, 4]);
@@ -246,10 +300,14 @@ describe('.search()', () => {
   });
 
   context('given a query for all fields', () => {
-    const results = idx.search({
-      must: {
-        match: { _all: 'weekend' },
-      },
+    let results = null;
+
+    beforeEach(() => {
+      results = idx.search({
+        must: {
+          match: { _all: 'weekend' },
+        },
+      });
     });
 
     it('returns the expected results', () => {
@@ -258,19 +316,23 @@ describe('.search()', () => {
   });
 
   context('given a query that changes boosting', () => {
-    const results = idx.search({
-      must: {
-        match: {
-          title: {
-            query: 'weekend',
-            boost: 1,
-          },
-          body: {
-            query: 'weekend',
-            boost: 5,
+    let results = null;
+
+    beforeEach(() => {
+      results = idx.search({
+        must: {
+          match: {
+            title: {
+              query: 'weekend',
+              boost: 1,
+            },
+            body: {
+              query: 'weekend',
+              boost: 5,
+            },
           },
         },
-      },
+      });
     });
 
     it('returns the expected results', () => {
@@ -279,18 +341,22 @@ describe('.search()', () => {
   });
 
   context('given a term query', () => {
-    const results = idx.search({
-      must: {
-        match: {
-          title: 'sale',
-        },
-        term: {
-          category: {
-            value: 'crime',
-            boost: 3,
+    let results = null;
+
+    beforeEach(() => {
+      results = idx.search({
+        must: {
+          match: {
+            title: 'sale',
+          },
+          term: {
+            category: {
+              value: 'crime',
+              boost: 3,
+            },
           },
         },
-      },
+      });
     });
 
     it('returns the expected results', () => {
@@ -298,17 +364,42 @@ describe('.search()', () => {
     });
   });
 
-  context('given a query with filters', () => {
-    context('given a single filter', () => {
-      const results = idx.search({
+  context.skip('given a terms query', () => {
+    let results = null;
+
+    beforeEach(() => {
+      results = idx.search({
         must: {
-          match: { _all: 'weekend' },
-        },
-        filter: {
-          term: {
-            category: 'crime',
+          match: {
+            title: 'sale',
+          },
+          terms: {
+            status: ['PUBLISHED', 'NEW'],
           },
         },
+      });
+    });
+
+    it('returns the expected results', () => {
+      expect(searchIds(results)).to.eql([2, 3]);
+    });
+  });
+
+  context('given a query with filters', () => {
+    context('given a single filter', () => {
+      let results = null;
+
+      beforeEach(() => {
+        results = idx.search({
+          must: {
+            match: { _all: 'weekend' },
+          },
+          filter: {
+            term: {
+              category: 'crime',
+            },
+          },
+        });
       });
 
       it('returns the expected results', () => {
@@ -317,15 +408,20 @@ describe('.search()', () => {
     });
 
     context('given two filters', () => {
-      const results = idx.search({
-        matchAll: {},
-        filter:   [
-          {
-            term: { category: 'crime' },
-          },
-          {
-            term: { status: 'PENDING_REVIEW' },
-          }],
+      let results = null;
+
+      beforeEach(() => {
+        results = idx.search({
+          matchAll: {},
+          filter:   [
+            {
+              term: { category: 'crime' },
+            },
+            {
+              term: { status: 'PENDING_REVIEW' },
+            },
+          ],
+        });
       });
 
       it('returns the expected results', () => {
@@ -334,17 +430,22 @@ describe('.search()', () => {
     });
 
     context('given query and two filters', () => {
-      const results = idx.search({
-        must: {
-          match: { title: 'sale' },
-        },
-        filter: [
-          {
-            term: { category: 'news' },
+      let results = null;
+
+      beforeEach(() => {
+        results = idx.search({
+          must: {
+            match: { title: 'sale' },
           },
-          {
-            term: { status: 'NEW' },
-          }],
+          filter: [
+            {
+              term: { category: 'news' },
+            },
+            {
+              term: { status: 'NEW' },
+            },
+          ],
+        });
       });
 
       it('returns the expected results', () => {
@@ -353,15 +454,19 @@ describe('.search()', () => {
     });
 
     context('given a term with an underscore', () => {
-      const results = idx.search({
-        must: {
-          match: { _all: 'popular' },
-        },
-        filter: {
-          term: {
-            category: 'live_events',
+      let results = null;
+
+      beforeEach(() => {
+        results = idx.search({
+          must: {
+            match: { _all: 'popular' },
           },
-        },
+          filter: {
+            term: {
+              category: 'live_events',
+            },
+          },
+        });
       });
 
       it('returns the expected results', () => {
@@ -370,15 +475,19 @@ describe('.search()', () => {
     });
 
     context('given an array of filters', () => {
-      const results = idx.search({
-        must: {
-          match: { _all: 'weekend' },
-        },
-        filter: [{
-          term: {
-            category: 'crime',
+      let results = null;
+
+      beforeEach(() => {
+        results = idx.search({
+          must: {
+            match: { _all: 'weekend' },
           },
-        }],
+          filter: [{
+            term: {
+              category: 'crime',
+            },
+          }],
+        });
       });
 
       it('returns the expected results', () => {
@@ -387,7 +496,11 @@ describe('.search()', () => {
     });
 
     context('given an exact string matching a "keyword" field', () => {
-      const results = idx.search('PUBLISHED');
+      let results = null;
+
+      beforeEach(() => {
+        results = idx.search('PUBLISHED');
+      });
 
       it('returns 0 results', () => {
         expect(results.length).to.be(0);
@@ -395,17 +508,21 @@ describe('.search()', () => {
     });
 
     context('given a filter term matching a "keyword" field', () => {
-      const results = idx.search({
-        must: {
-          match: {
-            title: 'sale',
+      let results = null;
+
+      beforeEach(() => {
+        results = idx.search({
+          must: {
+            match: {
+              title: 'sale',
+            },
           },
-        },
-        filter: [
-          {
-            term: { status: 'NEW' },
-          },
-        ],
+          filter: [
+            {
+              term: { status: 'NEW' },
+            },
+          ],
+        });
       });
 
       it('returns results filtered by keyword', () => {
@@ -414,18 +531,22 @@ describe('.search()', () => {
     });
 
     context('given a term exact matching a "keyword" field', () => {
-      const results = idx.search({
-        must: {
-          match: {
-            title: 'sale',
-          },
-          term: {
-            status: {
-              value: 'NEW',
-              boost: 3,
+      let results = null;
+
+      beforeEach(() => {
+        results = idx.search({
+          must: {
+            match: {
+              title: 'sale',
+            },
+            term: {
+              status: {
+                value: 'NEW',
+                boost: 3,
+              },
             },
           },
-        },
+        });
       });
 
       it('returns results in expected order', () => {
@@ -434,18 +555,22 @@ describe('.search()', () => {
     });
 
     context('given a term with a partial "keyword" field', () => {
-      const results = idx.search({
-        must: {
-          match: {
-            title: 'sale',
-          },
-          term: {
-            status: {
-              value: 'ne',
-              boost: 3,
+      let results = null;
+
+      beforeEach(() => {
+        results = idx.search({
+          must: {
+            match: {
+              title: 'sale',
+            },
+            term: {
+              status: {
+                value: 'ne',
+                boost: 3,
+              },
             },
           },
-        },
+        });
       });
 
       it('Doesnt have any effect on the ordering of results', () => {
@@ -457,16 +582,19 @@ describe('.search()', () => {
 
 describe('configuration', () => {
   context('given stopwords === false', () => {
-    const idx = new ESjs({
-      fields:    searchFields,
-      stopwords: false,
+    let results = null;
+
+    beforeEach(() => {
+      const idx = new ESjs({
+        fields:    searchFields,
+        stopwords: false,
+      });
+
+      idx.addDocs(searchDocs);
+      results = idx.search('to');
     });
 
-    idx.addDocs(searchDocs);
-
     it('does not exclude stopwords', () => {
-      const results = idx.search('to');
-
       expect(searchIds(results)).to.eql([2, 3]);
     });
   });
