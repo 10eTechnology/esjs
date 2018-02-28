@@ -34,6 +34,10 @@ export default class Search {
       return query;
     }
 
+    if (Array.isArray(query)) {
+      return query;
+    }
+
     return query[key];
   }
 
@@ -93,7 +97,9 @@ export default class Search {
       return results;
     }
 
-    const filtersArray = Array.isArray(this.query.filter) ? this.query.filter : [this.query.filter];
+    const filtersArray = Array.isArray(this.query.filter)
+      ? this.query.filter
+      : [this.query.filter];
     const resultsClone = Object.assign({}, results);
 
     filtersArray.forEach((filter) => {
@@ -133,7 +139,15 @@ export default class Search {
   }
 
   terms(query) {
-    return this.matchOnIndex(query, 'raw');
+    return Object.entries(query).reduce((result, [field, terms]) => {
+      const matches = terms.reduce((termsResult, term) => {
+        const r = this.term({ [field]: term });
+
+        return Object.assign({}, r, termsResult);
+      }, {});
+
+      return Object.assign({}, result, matches);
+    }, {});
   }
 
   matchOnIndex(query, indexType) {
@@ -143,7 +157,6 @@ export default class Search {
     Object.keys(fields).forEach((field) => {
       const results = this.matchField(field, fields[field], indexType);
 
-      // console.log('results', results);
       matches = Search.mergeMatches(matches, results);
     });
 
@@ -154,7 +167,6 @@ export default class Search {
     const matches = {};
 
     query.tokens.forEach((token) => {
-      // console.log('token', token);
       const node = this.idx.getNode(field, token, indexType);
 
       if (node) {

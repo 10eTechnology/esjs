@@ -364,24 +364,21 @@ describe('.search()', () => {
     });
   });
 
-  context.skip('given a terms query', () => {
+  context('given a terms query', () => {
     let results = null;
 
     beforeEach(() => {
       results = idx.search({
         must: {
-          match: {
-            title: 'sale',
-          },
           terms: {
-            status: ['PUBLISHED', 'NEW'],
+            status: ['PUBLISHED', 'PENDING_REVIEW'],
           },
         },
       });
     });
 
     it('returns the expected results', () => {
-      expect(searchIds(results)).to.eql([2, 3]);
+      expect(searchIds(results)).to.eql([2, 4]);
     });
   });
 
