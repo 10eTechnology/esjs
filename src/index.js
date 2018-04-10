@@ -235,6 +235,8 @@ export default class ESjs {
     /* eslint-disable no-param-reassign */
     if (node.docs) {
       delete node.docs[id];
+      // TODO: Cleanup leaf nodes without documents:
+      //  https://github.com/10eTechnology/esjs/issues/14
     }
     /* eslint-enable no-param-reassign */
   }

@@ -92,7 +92,8 @@ export default class Search {
       return results;
     }
 
-    const filtersArray = Array.isArray(this.query.filter) ? this.query.filter : [this.query.filter];
+    const filtersArray = Array.isArray(this.query.filter) ?
+      this.query.filter : [this.query.filter];
     const resultsClone = Object.assign({}, results);
 
     filtersArray.forEach((filter) => {
