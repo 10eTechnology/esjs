@@ -186,6 +186,43 @@ describe('.addDoc()', () => {
       }).not.to.throwError();
     });
   });
+
+  context('given two docs with the same id', () => {
+    it('removes the index for the first doc', () => {
+      const idx = new ESjs({ fields: { name: null } });
+
+      idx.addDoc({ id: 1, name: 'old' });
+      idx.addDoc({ id: 1, name: 'new' });
+      let results = idx.search('old');
+
+      expect(results.length).to.eql(0);
+
+      results = idx.search('new');
+      expect(results.length).to.eql(1);
+    });
+  });
+});
+
+describe('.removeDoc()', () => {
+  context('given an id not in the index', () => {
+    it('does nothing', () => {
+      const idx = new ESjs({ fields: { name: null } });
+
+      idx.addDoc({ id: 1, name: 'old' });
+      idx.removeDoc(2);
+      expect(idx.docCount()).to.eql(1);
+    });
+  });
+
+  context('given an id in the index', () => {
+    it('removes the document from the index', () => {
+      const idx = new ESjs({ fields: { name: null } });
+
+      idx.addDoc({ id: 1, name: 'old' });
+      idx.removeDoc(1);
+      expect(idx.docCount()).to.eql(0);
+    });
+  });
 });
 
 describe('.search()', () => {

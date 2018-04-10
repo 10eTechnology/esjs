@@ -45,6 +45,15 @@ export default class ESjs {
     this.indexDoc(doc);
   }
 
+  removeDoc(id) {
+    if (!(id in this.docs)) {
+      return;
+    }
+
+    this.removeDocFromIndexTree(id);
+    delete this.docs[id];
+  }
+
   search(query) {
     const results = new Search(this, query).search();
 
@@ -62,6 +71,9 @@ export default class ESjs {
   }
 
   storeDoc(doc) {
+    if (doc.id in this.docs) {
+      this.removeDoc(doc.id);
+    }
     this.docs[doc.id] = {};
 
     if (this.storeDocs) {
@@ -198,6 +210,35 @@ export default class ESjs {
 
   getDoc(id) {
     return this.docs[id];
+  }
+
+  removeDocFromIndexTree(id) {
+    [
+      'tokenized',
+      'raw',
+    ].forEach((type) => {
+      Object.keys(this.fields).forEach((field) => {
+        this.removeDocFromNode(id, this.index[type][field]);
+      });
+    });
+  }
+
+  removeDocFromNode(id, node) {
+    if (!node) {
+      return;
+    }
+    Object.keys(node).forEach((key) => {
+      if (key !== 'docs' && key !== 'df') {
+        this.removeDocFromNode(id, node[key]);
+      }
+    });
+    /* eslint-disable no-param-reassign */
+    if (node.docs) {
+      delete node.docs[id];
+      // TODO: Cleanup leaf nodes without documents:
+      //  https://github.com/10eTechnology/esjs/issues/14
+    }
+    /* eslint-enable no-param-reassign */
   }
 
   getNode(field, token, type = 'tokenized', create = false) {
