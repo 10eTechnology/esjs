@@ -10,6 +10,7 @@ export default class ESjs {
 
     this.fields = normalizedConfig.fields;
     this.docs = {};
+    this.docIdToIndexNodeMap = {};
     this.index = { tokenized: {}, raw: {} };
     this.storeDocs = normalizedConfig.storeDocs;
     this.allowPartial = normalizedConfig.allowPartial;
@@ -52,6 +53,7 @@ export default class ESjs {
 
     this.removeDocFromIndexTree(id);
     delete this.docs[id];
+    delete this.docIdToIndexNodeMap[id];
   }
 
   search(query) {
@@ -186,7 +188,7 @@ export default class ESjs {
   }
 
   addTokenToNode(field, token, data, type) {
-    const node = this.getNode(field, token, type, true);
+    const node = this.getNode(field, token, type, true, data.id);
 
     if (!node.docs[data.id]) {
       node.docs[data.id] = { tf: data.tf };
@@ -213,25 +215,17 @@ export default class ESjs {
   }
 
   removeDocFromIndexTree(id) {
-    [
-      'tokenized',
-      'raw',
-    ].forEach((type) => {
-      Object.keys(this.fields).forEach((field) => {
-        this.removeDocFromNode(id, this.index[type][field]);
+    if (id in this.docIdToIndexNodeMap) {
+      this.docIdToIndexNodeMap[id].forEach((node) => {
+        ESjs.removeDocFromNode(id, node);
       });
-    });
+    }
   }
 
-  removeDocFromNode(id, node) {
+  static removeDocFromNode(id, node) {
     if (!node) {
       return;
     }
-    Object.keys(node).forEach((key) => {
-      if (key !== 'docs' && key !== 'df') {
-        this.removeDocFromNode(id, node[key]);
-      }
-    });
     /* eslint-disable no-param-reassign */
     if (node.docs) {
       delete node.docs[id];
@@ -241,7 +235,7 @@ export default class ESjs {
     /* eslint-enable no-param-reassign */
   }
 
-  getNode(field, token, type = 'tokenized', create = false) {
+  getNode(field, token, type = 'tokenized', create = false, docId = null) {
     let i = 0;
     let idx = this.index[type][field];
 
@@ -254,7 +248,16 @@ export default class ESjs {
 
       if (!(c in idx)) {
         if (create) {
-          idx[c] = { docs: {}, df: 0 };
+          if (!docId) {
+            throw new Error('doc id null when creating nodes in getNode');
+          }
+          const newNode = { docs: {}, df: 0 };
+
+          if (!(docId in this.docIdToIndexNodeMap)) {
+            this.docIdToIndexNodeMap[docId] = [];
+          }
+          this.docIdToIndexNodeMap[docId].push(newNode);
+          idx[c] = newNode;
         } else {
           return null;
         }
