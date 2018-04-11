@@ -1,3 +1,4 @@
+import stringify from 'json-stable-stringify';
 import Pipeline from './pipeline';
 import Serializer from './serializer';
 import { tokenCount } from './tokenizers';
@@ -10,6 +11,8 @@ export default class ESjs {
 
     this.fields = normalizedConfig.fields;
     this.docs = {};
+    this.docHashMap = {}; // key is hash of the document
+    this.docHashMapReverse = {}; // key is document id, value is document hash
     this.index = { tokenized: {}, raw: {} };
     this.storeDocs = normalizedConfig.storeDocs;
     this.allowPartial = normalizedConfig.allowPartial;
@@ -40,9 +43,17 @@ export default class ESjs {
     if (!doc.id) {
       throw new Error('documents must have an id attribute');
     }
+    const docHash = stringify(doc);
+
+    if (docHash in this.docHashMap) {
+      return;
+    }
 
     this.storeDoc(doc);
     this.indexDoc(doc);
+
+    this.docHashMap[docHash] = true;
+    this.docHashMapReverse[doc.id] = docHash;
   }
 
   removeDoc(id) {
@@ -52,6 +63,10 @@ export default class ESjs {
 
     this.removeDocFromIndexTree(id);
     delete this.docs[id];
+    const docHash = this.docHashMapReverse[id];
+
+    delete this.docHashMap[docHash];
+    delete this.docHashMapReverse[id];
   }
 
   search(query) {

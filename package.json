@@ -41,6 +41,7 @@
     "webpack": "^2.3.2"
   },
   "dependencies": {
+    "json-stable-stringify": "1.0.1",
     "porter-stemmer": "^0.9.1"
   },
   "peerDependencies": {
