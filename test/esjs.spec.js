@@ -221,6 +221,8 @@ describe('.removeDoc()', () => {
       idx.addDoc({ id: 1, name: 'old' });
       idx.removeDoc(1);
       expect(idx.docCount()).to.eql(0);
+      expect(Object.keys(idx.docs).length).to.eql(0);
+      expect(Object.keys(idx.docIdToIndexNodeMap).length).to.eql(0);
     });
   });
 });
