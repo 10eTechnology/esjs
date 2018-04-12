@@ -196,6 +196,10 @@ describe('.addDoc()', () => {
       let results = idx.search('old');
 
       expect(results.length).to.eql(0);
+      expect(Object.keys(idx.docs).length).to.eql(1);
+      expect(Object.keys(idx.docIdToIndexNodeMap).length).to.eql(1);
+      // each doc will have one node per type: raw and tokenized
+      expect(idx.docIdToIndexNodeMap[1].length).to.eql(2);
 
       results = idx.search('new');
       expect(results.length).to.eql(1);
@@ -223,6 +227,23 @@ describe('.removeDoc()', () => {
       expect(idx.docCount()).to.eql(0);
       expect(Object.keys(idx.docs).length).to.eql(0);
       expect(Object.keys(idx.docIdToIndexNodeMap).length).to.eql(0);
+    });
+  });
+
+  context('given two docs with the same tokens', () => {
+    it('removes the index for the second doc', () => {
+      const idx = new ESjs({ fields: { name: null } });
+
+      idx.addDoc({ id: 1, name: 'old' });
+      idx.addDoc({ id: 2, name: 'old' });
+      expect(Object.keys(idx.docs).length).to.eql(2);
+      expect(Object.keys(idx.docIdToIndexNodeMap).length).to.eql(2);
+      expect(idx.docIdToIndexNodeMap[1].length).to.eql(2);
+      expect(idx.docIdToIndexNodeMap[2].length).to.eql(2);
+      idx.removeDoc(2);
+      expect(Object.keys(idx.docs).length).to.eql(1);
+      expect(Object.keys(idx.docIdToIndexNodeMap).length).to.eql(1);
+      expect(idx.docIdToIndexNodeMap[1].length).to.eql(2);
     });
   });
 });

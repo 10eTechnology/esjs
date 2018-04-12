@@ -188,11 +188,17 @@ export default class ESjs {
   }
 
   addTokenToNode(field, token, data, type) {
-    const node = this.getNode(field, token, type, true, data.id);
+    const node = this.getNode(field, token, type, true);
 
     if (!node.docs[data.id]) {
+      // add the document to the node
       node.docs[data.id] = { tf: data.tf };
       node.df += 1;
+
+      if (!(data.id in this.docIdToIndexNodeMap)) {
+        this.docIdToIndexNodeMap[data.id] = [];
+      }
+      this.docIdToIndexNodeMap[data.id].push(node);
     } else {
       node.docs[data.id].tf = data.tf;
     }
@@ -235,7 +241,7 @@ export default class ESjs {
     /* eslint-enable no-param-reassign */
   }
 
-  getNode(field, token, type = 'tokenized', create = false, docId = null) {
+  getNode(field, token, type = 'tokenized', create = false) {
     let i = 0;
     let idx = this.index[type][field];
 
@@ -248,16 +254,7 @@ export default class ESjs {
 
       if (!(c in idx)) {
         if (create) {
-          if (!docId) {
-            throw new Error('doc id null when creating nodes in getNode');
-          }
-          const newNode = { docs: {}, df: 0 };
-
-          if (!(docId in this.docIdToIndexNodeMap)) {
-            this.docIdToIndexNodeMap[docId] = [];
-          }
-          this.docIdToIndexNodeMap[docId].push(newNode);
-          idx[c] = newNode;
+          idx[c] = { docs: {}, df: 0 };
         } else {
           return null;
         }
